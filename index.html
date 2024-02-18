@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ввод данных</title>
+    <script>
+        function getSettings() {
+            var idInstance = document.getElementById('idInstance').value;
+            var apiTokenInstance = document.getElementById('ApiTokenInstance').value;
+            var phoneNumber = document.getElementById('phoneNumber').value;
+            var url = 'https://api.green-api.com/waInstance' + idInstance + '/getSettings/' + apiTokenInstance + '?phone=' + phoneNumber;
+            document.getElementById('response').textContent = "Отправляем запрос...";
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById('response').textContent = xhr.responseText;
+                } else {
+                    document.getElementById('response').textContent = 'Ошибка: ' + xhr.status;
+                }
+            };
+            xhr.send();
+        }
+
+        function sendMessage() {
+            var idInstance = document.getElementById('idInstance').value;
+            var apiTokenInstance = document.getElementById('ApiTokenInstance').value;
+            var phoneNumber = document.getElementById('phoneNumber').value + '@c.us';
+            var message = document.getElementById('message').value;
+            var url = 'https://api.green-api.com/waInstance' + idInstance + '/sendMessage/' + apiTokenInstance;
+            var data = JSON.stringify({ chatId: phoneNumber, message: message });
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    document.getElementById('response').textContent = ""; // Очистка поля ответа
+                    if (xhr.status === 200) {
+                        document.getElementById('response').textContent = xhr.responseText;
+                    } else {
+                        document.getElementById('response').textContent = 'Ошибка: ' + xhr.status;
+                    }
+                }
+            };
+            xhr.send(data);
+        }
+    </script>
+</head>
+<body>
+    <h2>Введите данные</h2>
+    <label for="idInstance">ID Instance:</label>
+    <input type="text" id="idInstance" name="idInstance"><br><br>
+    
+    <label for="ApiTokenInstance">Api Token Instance:</label>
+    <input type="text" id="ApiTokenInstance" name="ApiTokenInstance"><br><br>
+
+    <label for="phoneNumber">Номер телефона (чата):</label>
+    <input type="text" id="phoneNumber" name="phoneNumber"><br><br>
+    
+    <button onclick="getSettings()">getSettings</button><br><br>
+
+    <label for="message">Текст отправляемого сообщения:</label><br>
+    <textarea id="message" name="message" rows="4" cols="50"></textarea><br><br>
+    
+    <button onclick="sendMessage()">sendMessage</button><br><br>
+    
+    <label for="response">Ответ:</label>
+    <textarea id="response" rows="10" cols="50" readonly></textarea>
+</body>
+</html>
